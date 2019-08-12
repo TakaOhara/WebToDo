@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.example.demo.app.task.TaskForm;
 import com.example.demo.entity.Task;
@@ -87,19 +87,21 @@ class TaskServiceImplUnitTest {
     @Test // テストケース
     @DisplayName("タスクが取得できない場合のテスト")
         // テスト名
-    void testGetTaskFormReturnNull() {
+    void testGetTaskFormThrowException() {
     	
         // モッククラスのI/Oをセット
-        when(dao.findById(0)).thenReturn(Optional.empty());
+        when(dao.findById(0)).thenThrow(new EmptyResultDataAccessException(1));
 
-        // サービスを実行
-        Optional<TaskForm> taskO = taskServiceImpl.getTaskForm(0);
 
         // モックの指定メソッドの実行回数を検査
-        verify(dao, times(1)).findById(0);
-
-        // 戻り値の検査
-        assertNull(taskO.orElse(null), "結果がNULLではありません");
+        //verify(dao, times(1)).findById(0);
+        
+        try {
+        // サービスを実行
+        	Optional<TaskForm> taskO = taskServiceImpl.getTaskForm(0);
+        } catch (EmptyResultDataAccessException e) {
+        	assertEquals(e.getMessage(), "Incorrect result size: expected 1, actual 0");
+        }
         
     }
     

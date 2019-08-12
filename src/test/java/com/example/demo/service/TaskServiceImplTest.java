@@ -1,15 +1,16 @@
 package com.example.demo.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -33,24 +34,27 @@ class TaskServiceImplTest {
         List<Task> list = taskService.findAll();
 
         //Tasksテーブルに入っている3件が取得できているか確認
-        assertEquals( 3, list.size());
+        assertEquals( 2, list.size());
     }
     
     @Test
     @DisplayName("タスクが取得できない場合のテスト")
-    void testGetTaskFormReturnNull() {//単体テストと名前が同じになるのはOK?
-        Optional<TaskForm> taskO = taskService.getTaskForm(0);
-
-        assertNull(taskO.orElse(null), "結果がNULLではありません");
+    void testGetTaskFormReturnNull() {
+        
+        try {
+        // サービスを実行
+        	Optional<TaskForm> taskO = taskService.getTaskForm(0);
+        } catch (EmptyResultDataAccessException e) {
+        	assertEquals(e.getMessage(), "Incorrect result size: expected 1, actual 0");
+        }
     }
     
-    @Test//この段階で画面ができていない可能性　制作中は基本的には単体テストで検査する
+    @Test
     @DisplayName("1件のタスクが取得できた場合のテスト")
     void testGetTaskFormReturnOne() {
         Optional<TaskForm> task = taskService.getTaskForm(1);
         
-        //idが1の場合、タイトルはwash dishes2
-        assertEquals( "wash dishes2", task.get().getTitle());
+        assertEquals( "JUnitを学習", task.get().getTitle());
     }
     
 

@@ -11,19 +11,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class TaskForm {
 
-    @Digits(integer = 1, fraction = 0, message = "–â‘è‚ª”­¶‚µ‚Ü‚µ‚½")
+    @Digits(integer = 1, fraction = 0)
     private int typeId;
 
-    @NotNull (message = "ƒ^ƒCƒgƒ‹‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢")
-    @Size(min = 1, max = 20, message="ƒ^ƒCƒgƒ‹‚Í20•¶šˆÈ“à‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢")
+    @NotNull (message = "ã‚¿ã‚¤ãƒˆãƒ«ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚")
+    @Size(min = 1, max = 20, message="20æ–‡å­—ä»¥å†…ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚")
     private String title;
 
-    @NotNull (message = "“à—e‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢")
+    @NotNull (message = "å†…å®¹ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚")
     private String detail;
 
-    @NotNull (message = "ŠúŒÀ‚ğİ’è‚µ‚Ä‚­‚¾‚³‚¢")
+    @NotNull (message = "æœŸé™ã‚’è¨­å®šã—ã¦ãã ã•ã„ã€‚")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Future (message = "ƒ^ƒXƒN‚ğ‰ß‹‚Éİ’è‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ")
+    @Future (message = "æœŸé™ãŒéå»ã«è¨­å®šã•ã‚Œã¦ã„ã¾ã™ã€‚")
     private LocalDateTime deadline;
 
     public boolean isNewTask;
