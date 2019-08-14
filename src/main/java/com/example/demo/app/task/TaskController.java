@@ -1,6 +1,5 @@
 package com.example.demo.app.task;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,14 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 import com.example.demo.entity.Task;
 import com.example.demo.service.TaskService;
 
-//import com.example.dbtest.domain.entity.UserInfo;
-
+/**
+ * ToDoアプリ
+ */
 @Controller
 @RequestMapping("/task")
 public class TaskController {
@@ -36,7 +34,13 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    //INDEX
+
+    /**
+     * タスクの一覧を表示します
+     * @param taskForm
+     * @param model
+     * @return resources/templates下のHTMLファイル名
+     */
     @GetMapping
     public String task(TaskForm taskForm, Model model) {
     	
@@ -49,27 +53,29 @@ public class TaskController {
         return "task/index";
     }
 
-    //INSERT
+    /**
+     * タスクデータを一件挿入
+     * @param taskForm
+     * @param result
+     * @param model
+     * @param principal
+     * @return
+     */
     @PostMapping("/save")
     public String insert(
     	@Valid @ModelAttribute TaskForm taskForm,
         BindingResult result,
-        Model model,
-        Principal principal) {
-    	
-    	int userId = 1;
-//    	if(principal !=  null) {//
-//        	Authentication auth = (Authentication)principal;
-//            UserInfo userInfo = (UserInfo)auth.getPrincipal();
-//            userId = userInfo.getId();
-//        }
+        Model model) {
 
-        Task task = new Task();
-        task.setUserId(1);
-        task.setTypeId(taskForm.getTypeId());
-        task.setTitle(taskForm.getTitle());
-        task.setDetail(taskForm.getDetail());
-        task.setDeadline(taskForm.getDeadline());
+//      Task task = new Task();
+//      task.setUserId(1);
+//      task.setTypeId(taskForm.getTypeId());
+//      task.setTitle(taskForm.getTitle());
+//      task.setDetail(taskForm.getDetail());
+//      task.setDeadline(taskForm.getDeadline());
+    	
+    	//TaskFormのデータをTaskに格納
+    	Task task = makeTask(taskForm, 0);
         
         if (!result.hasErrors()) {
             taskService.save(task);
@@ -84,7 +90,13 @@ public class TaskController {
         }
     }
 
-    //Before UPDATE
+    /**
+     * 一件タスクデータを取得し、フォーム内に表示
+     * @param taskForm
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/{id}")
     public String showUpdate(
     	TaskForm taskForm,
@@ -107,10 +119,12 @@ public class TaskController {
     }
     
     /**
-     * UPDATE
-     * @param id
+     * タスクidを取得し、一件のデータ更新
      * @param taskForm
-     * @param mav
+     * @param result
+     * @param id
+     * @param model
+     * @param redirectAttributes
      * @return
      */
     @PostMapping("/update")
@@ -119,18 +133,10 @@ public class TaskController {
     	BindingResult result,
     	@RequestParam("taskId") String id,
     	Model model,
-    	RedirectAttributes redirectAttributes,
-        Principal principal) {
+    	RedirectAttributes redirectAttributes) {
     	
     	int taskId = Integer.parseInt(id);
-    	int userId = 1;
-//    	if(principal !=  null) {
-//        	Authentication auth = (Authentication)principal;
-//            UserInfo userInfo = (UserInfo)auth.getPrincipal();
-//            userId = userInfo.getId();
-//        }
-    	
-    	//isNewTaskはfalseに設定される
+
         Optional<TaskForm> form = taskService.getTaskForm(taskId);
 
         if (!form.isPresent()) {
@@ -159,9 +165,9 @@ public class TaskController {
     }
 
     /**
-     * DELETE
+     * タスクidを取得し、一件のデータ削除
      * @param id
-     * @param mav
+     * @param model
      * @return
      */
     @PostMapping("/delete")
@@ -173,13 +179,24 @@ public class TaskController {
         return "redirect:/task";
     }
 
-//    private Task makeNewTask(int userId, TaskForm taskForm) {
-//        return new Task(userId, taskForm.getTypeId(), taskForm.getTitle(), taskForm.getDetail(), taskForm.getDeadline());
-//    }
-//
-//    private Task makeTask(int userId, TaskForm taskForm) {
-//        return new Task(taskForm.getId(), userId, taskForm.getTypeId(), taskForm.getTitle(), taskForm.getDetail(), taskForm.getDeadline());
-//    }
+    /**
+     * TaskFormのデータをTaskに入れて返す
+     * @param taskForm
+     * @param taskId 新規登録の場合は0を指定
+     * @return
+     */
+    private Task makeTask(TaskForm taskForm, int taskId) {
+        Task task = new Task();
+        if(taskId != 0) {
+        	task.setId(taskId);
+        }
+        task.setUserId(1);
+        task.setTypeId(taskForm.getTypeId());
+        task.setTitle(taskForm.getTitle());
+        task.setDetail(taskForm.getDetail());
+        task.setDeadline(taskForm.getDeadline());
+        return task;
+    }
 
 
 }

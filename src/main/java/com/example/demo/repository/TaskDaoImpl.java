@@ -56,7 +56,8 @@ public class TaskDaoImpl implements TaskDao {
 	@Override
 	public Optional<Task> findById(int id) {
 		String sql = "SELECT task.id, user_id, type_id, title, detail, deadline, "
-				+ "type, comment FROM task JOIN task_type ON task.type_id = task_type.id "
+				+ "type, comment FROM task "
+				+ "JOIN task_type ON task.type_id = task_type.id "
 				+ "WHERE task.id = ?";
 		Map<String, Object> result = jdbcTemplate.queryForMap(sql, id);
 		
@@ -77,7 +78,6 @@ public class TaskDaoImpl implements TaskDao {
 		Optional<Task> taskOptional = Optional.ofNullable(task);
 		return taskOptional;
 	}
-
 
 	@Override
 	public void save(Task task) {
