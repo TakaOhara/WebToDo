@@ -61,7 +61,7 @@ public class TaskController {
      * @param principal
      * @return
      */
-    @PostMapping("/save")
+    @PostMapping("/insert")
     public String insert(
     	@Valid @ModelAttribute TaskForm taskForm,
         BindingResult result,
@@ -78,14 +78,14 @@ public class TaskController {
     	Task task = makeTask(taskForm, 0);
         
         if (!result.hasErrors()) {
-            taskService.save(task);
-            return "redirect:/task?complete";
+            taskService.insert(task);
+            return "redirect:/task";
         } else {
             taskForm.setNewTask(true);
             model.addAttribute("taskForm", taskForm);
             List<Task> list = taskService.findAll();
             model.addAttribute("list", list);
-            model.addAttribute("title", "タスク一覧（バリデーション）");
+            model.addAttribute("title", "タスク一覧（バリデーション）");//プロパティファイル
             return "task/index";
         }
     }
@@ -103,11 +103,15 @@ public class TaskController {
         @PathVariable int id,
         Model model) {
 
-        Optional<TaskForm> form = taskService.getTaskForm(id);
+        Optional<Task> task = taskService.getTask(id);
+//        System.out.println(task.get().getTypeId());
+        
+		if(!task.isPresent()) {
+			return "redirect:/task";
+		}
 
-        if (!form.isPresent()) {
-            return "redirect:/task";
-        }
+		Optional<TaskForm> form = task.map(tsk ->
+                new TaskForm(tsk.getTypeId(), tsk.getTitle(), tsk.getDetail(), tsk.getDeadline(), false));
 
         model.addAttribute("taskForm", form.get());
         List<Task> list = taskService.findAll();
@@ -131,16 +135,14 @@ public class TaskController {
     public String update(
     	@Valid @ModelAttribute TaskForm taskForm,
     	BindingResult result,
-    	@RequestParam("taskId") String id,
+    	@RequestParam("taskId") int taskId,//pathvariable
     	Model model,
     	RedirectAttributes redirectAttributes) {
-    	
-    	int taskId = Integer.parseInt(id);
 
         Optional<TaskForm> form = taskService.getTaskForm(taskId);
 
         if (!form.isPresent()) {
-            return "redirect:/task";
+            return "redirect:/task";//リダイレクト必要なし
         }
     	
         Task task = new Task();
@@ -172,7 +174,7 @@ public class TaskController {
      */
     @PostMapping("/delete")
     public String delete(
-    	@RequestParam("taskId") String id,
+    	@RequestParam("taskId") String id,//pathvariable
     	Model model) {
     	
         taskService.deleteById(Integer.parseInt(id));

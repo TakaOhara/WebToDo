@@ -10,11 +10,13 @@ public interface TaskService {
 
 	List<Task> findAll();
 
-	void save(Task task);
+	void insert(Task task);
 	
 	void update(Task task);
 	
 	void deleteById(int id);
 	
 	Optional<TaskForm> getTaskForm(int id);
+	
+	Optional<Task> getTask(int id);
 }

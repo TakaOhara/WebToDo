@@ -29,7 +29,7 @@ public class TaskDaoImpl implements TaskDao {
 		
 		String sql = "SELECT task.id, user_id, type_id, title, detail, deadline, "
 				+ "type, comment FROM task "
-				+ "JOIN task_type ON task.type_id = task_type.id";
+				+ "INNER JOIN task_type ON task.type_id = task_type.id";
 		List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql);
 		List<Task> list = new ArrayList<Task>();
 		for(Map<String, Object> result : resultList) {
@@ -37,7 +37,7 @@ public class TaskDaoImpl implements TaskDao {
 			Task task = new Task();
 			task.setId((int)result.get("id"));
 			task.setUserId((int)result.get("user_id"));
-			task.setUserId((int)result.get("type_id"));
+			task.setTypeId((int)result.get("type_id"));
 			task.setTitle((String)result.get("title"));
 			task.setDetail((String)result.get("detail"));
 			task.setDeadline(((Timestamp) result.get("deadline")).toLocalDateTime());
@@ -57,14 +57,14 @@ public class TaskDaoImpl implements TaskDao {
 	public Optional<Task> findById(int id) {
 		String sql = "SELECT task.id, user_id, type_id, title, detail, deadline, "
 				+ "type, comment FROM task "
-				+ "JOIN task_type ON task.type_id = task_type.id "
+				+ "INNER JOIN task_type ON task.type_id = task_type.id "
 				+ "WHERE task.id = ?";
 		Map<String, Object> result = jdbcTemplate.queryForMap(sql, id);
 		
 		Task task = new Task();
 		task.setId((int)result.get("id"));
 		task.setUserId((int)result.get("user_id"));
-		task.setUserId((int)result.get("type_id"));
+		task.setTypeId((int)result.get("type_id"));
 		task.setTitle((String)result.get("title"));
 		task.setDetail((String)result.get("detail"));
 		task.setDeadline(((Timestamp) result.get("deadline")).toLocalDateTime());
@@ -80,7 +80,7 @@ public class TaskDaoImpl implements TaskDao {
 	}
 
 	@Override
-	public void save(Task task) {
+	public void insert(Task task) {
 		jdbcTemplate.update("INSERT INTO task(user_id, type_id, title, detail, deadline) VALUES(?, ?, ?, ?,?)",
 				 task.getUserId(), task.getTypeId(), task.getTitle(), task.getDetail(), task.getDeadline() );
 	}

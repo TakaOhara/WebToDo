@@ -1,0 +1,5 @@
+com:
+  auth0:
+    domain: trainocate.auth0.com
+    clientId: iOKFXjuzBvYydcJPhwOA7QAlODxxRhME
+    clientSecret: 'YOUR_CLIENT_SECRET'

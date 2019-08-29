@@ -27,8 +27,8 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public void save(Task task) {
-		dao.save(task);
+	public void insert(Task task) {
+		dao.insert(task);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
 	}
 	
 	@Override
-	public Optional<TaskForm> getTaskForm(int id) {
+	public Optional<TaskForm> getTaskForm(int id) {//サービスにformを持ち込まないほうがよい
 		Optional<Task> task = dao.findById(id);
 
 		if(!task.isPresent()) {
@@ -55,6 +55,11 @@ public class TaskServiceImpl implements TaskService {
 
 		return task.map(tsk ->
                 new TaskForm(tsk.getTypeId(), tsk.getTitle(), tsk.getDetail(), tsk.getDeadline(), false));
+	}
+
+	@Override
+	public Optional<Task> getTask(int id) {
+		return dao.findById(id);
 	}
 
 
