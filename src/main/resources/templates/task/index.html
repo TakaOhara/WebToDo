@@ -5,8 +5,9 @@
 <title>CRUDforTask</title>
 </head>
 <body>
-<h1　th:text="${title}">ようこそ</h1>
-<p  th:if="${complete}" th:text="${complete}"></p>
+<h1 th:text="${title}">ようこそ</h1>
+<p th:if="${complete}" th:text="${complete}"></p>
+<p th:if="${err}" th:text="${err}"></p>
 <form method="POST" th:action="${taskForm.isNewTask}? @{/task/insert} : @{/task/update}" th:object="${taskForm}">
 	<label>タスクタイプ（選択してください）：</label>
 	<select name="typeId">
@@ -28,6 +29,7 @@
 	<input type="submit" value="送信">
 </form>
 <div th:if="${taskForm.isNewTask}" style="margin:10px">
+<h3>タスク　編集削除</h3>
 <table>
 	<tr th:each="obj : ${list}">
 		<td th:text=${obj.id}></td>
@@ -45,10 +47,7 @@
 </table>
 </div>
 
-<p><a href="#" th:href="@{/task}">戻る</a></p>
+<p th:unless="${taskForm.isNewTask}"><a href="#" th:href="@{/task}">戻る</a></p>
 
-<form action="#" th:action="@{/logout}" method="POST">
-	<input type="submit" value="Logout" />
-</form>
 </body>
 </html>

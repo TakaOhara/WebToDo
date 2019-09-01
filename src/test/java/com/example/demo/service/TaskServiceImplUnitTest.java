@@ -98,7 +98,7 @@ class TaskServiceImplUnitTest {
         
         try {
         // サービスを実行
-        	Optional<TaskForm> taskO = taskServiceImpl.getTaskForm(0);
+        	Optional<Task> taskO = taskServiceImpl.getTask(0);
         } catch (EmptyResultDataAccessException e) {
         	assertEquals(e.getMessage(), "Incorrect result size: expected 1, actual 0");
         }
@@ -117,7 +117,7 @@ class TaskServiceImplUnitTest {
         when(dao.findById(1)).thenReturn(form);
 
         // サービスを実行
-        Optional<TaskForm> taskActual = taskServiceImpl.getTaskForm(1);
+        Optional<Task> taskActual = taskServiceImpl.getTask(1);
 
         // モックの指定メソッドの実行回数を検査
         verify(dao, times(1)).findById(1);

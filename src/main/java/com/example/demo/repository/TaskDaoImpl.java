@@ -30,8 +30,14 @@ public class TaskDaoImpl implements TaskDao {
 		String sql = "SELECT task.id, user_id, type_id, title, detail, deadline, "
 				+ "type, comment FROM task "
 				+ "INNER JOIN task_type ON task.type_id = task_type.id";
+		
+		//タスク一覧をMapのListで取得
 		List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql);
+		
+		//return用の空のListを用意
 		List<Task> list = new ArrayList<Task>();
+		
+		//二つのテーブルのデータをTaskにまとめる
 		for(Map<String, Object> result : resultList) {
 			
 			Task task = new Task();
@@ -75,8 +81,10 @@ public class TaskDaoImpl implements TaskDao {
 		type.setComment((String)result.get("comment"));
 		task.setTaskType(type);
 		
-		Optional<Task> taskOptional = Optional.ofNullable(task);
-		return taskOptional;
+		//taskをOptionalでラップする
+		Optional<Task> taskOpt = Optional.ofNullable(task);
+		
+		return taskOpt;
 	}
 
 	@Override

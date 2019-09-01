@@ -43,7 +43,7 @@ class TaskServiceImplTest {
         
         try {
         // サービスを実行
-        	Optional<TaskForm> taskO = taskService.getTaskForm(0);
+        	Optional<Task> taskO = taskService.getTask(0);
         } catch (EmptyResultDataAccessException e) {
         	assertEquals(e.getMessage(), "Incorrect result size: expected 1, actual 0");
         }
@@ -52,7 +52,7 @@ class TaskServiceImplTest {
     @Test
     @DisplayName("1件のタスクが取得できた場合のテスト")
     void testGetTaskFormReturnOne() {
-        Optional<TaskForm> task = taskService.getTaskForm(1);
+        Optional<Task> task = taskService.getTask(1);
         
         assertEquals( "JUnitを学習", task.get().getTitle());
     }

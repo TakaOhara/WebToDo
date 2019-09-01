@@ -44,7 +44,10 @@ public class TaskController {
     @GetMapping
     public String task(TaskForm taskForm, Model model) {
     	
+    	//新規登録か更新かを判断する仕掛け
         taskForm.setNewTask(true);
+        
+        //Taskのリストを取得する
         List<Task> list = taskService.findAll();
         
         model.addAttribute("list", list);
@@ -103,17 +106,18 @@ public class TaskController {
         @PathVariable int id,
         Model model) {
 
-        Optional<Task> task = taskService.getTask(id);
-//        System.out.println(task.get().getTypeId());
+    	//Taskを取得(Optionalでラップ)
+        Optional<Task> taskOpt = taskService.getTask(id);
         
-		if(!task.isPresent()) {
-			return "redirect:/task";
-		}
-
-		Optional<TaskForm> form = task.map(tsk ->
-                new TaskForm(tsk.getTypeId(), tsk.getTitle(), tsk.getDetail(), tsk.getDeadline(), false));
-
-        model.addAttribute("taskForm", form.get());
+        //TaskFormへの詰め直し
+        Optional<TaskForm> taskFormOpt = taskOpt.map(t -> makeTaskForm(t));
+        
+        //TaskFormがnullでなければ中身を取り出し
+        if(taskFormOpt.isPresent()) {
+        	taskForm = taskFormOpt.get();
+        }
+		
+        model.addAttribute("taskForm", taskForm);
         List<Task> list = taskService.findAll();
         model.addAttribute("list", list);
         model.addAttribute("taskId", id);
@@ -135,25 +139,15 @@ public class TaskController {
     public String update(
     	@Valid @ModelAttribute TaskForm taskForm,
     	BindingResult result,
-    	@RequestParam("taskId") int taskId,//pathvariable
+    	@RequestParam("taskId") int taskId,
     	Model model,
     	RedirectAttributes redirectAttributes) {
-
-        Optional<TaskForm> form = taskService.getTaskForm(taskId);
-
-        if (!form.isPresent()) {
-            return "redirect:/task";//リダイレクト必要なし
-        }
-    	
-        Task task = new Task();
-        task.setId(taskId);
-        task.setUserId(1);
-        task.setTypeId(taskForm.getTypeId());
-        task.setTitle(taskForm.getTitle());
-        task.setDetail(taskForm.getDetail());
-        task.setDeadline(taskForm.getDeadline());
+        
+    	//TaskFormのデータをTaskに格納
+    	Task task = makeTask(taskForm, taskId);
     	
         if (!result.hasErrors()) {
+        	//更新処理、フラッシュスコープの使用、リダイレクト（個々の編集ページ）
         	taskService.update(task);
         	redirectAttributes.addFlashAttribute("complete", "変更が完了しました");
             return "redirect:/task/" + taskId;
@@ -177,6 +171,7 @@ public class TaskController {
     	@RequestParam("taskId") String id,//pathvariable
     	Model model) {
     	
+    	//タスクを一件削除しリダイレクト
         taskService.deleteById(Integer.parseInt(id));
         return "redirect:/task";
     }
@@ -200,5 +195,22 @@ public class TaskController {
         return task;
     }
 
+    /**
+     * TaskのデータをTaskFormに入れて返す
+     * @param task
+     * @return
+     */
+    private TaskForm makeTaskForm(Task task) {
+    	
+        TaskForm taskForm = new TaskForm();
+
+        taskForm.setTypeId(task.getTypeId());
+        taskForm.setTitle(task.getTitle());
+        taskForm.setDetail(task.getDetail());
+        taskForm.setDeadline(task.getDeadline());
+        taskForm.setNewTask(false);
+        
+        return taskForm;
+    }
 
 }
